@@ -1,291 +1,522 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>StoryScroll Portfolio</title>
-
-    <!-- 1. Tải React và ReactDOM -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-
-    <!-- 2. Tải Babel để biên dịch JSX ngay trên trình duyệt -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-    <!-- 3. Tải Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- 4. Fonts -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hồ Sơ Của Tôi</title>
+    <!-- Import phông chữ Pixel -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400&family=Nunito:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-
-    <!-- 5. Cấu hình Tailwind giống như trong dự án gốc -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'warm-white': '#fdfbf7',
-                        'dark-gray': '#2c3e50',
-                        'minecraft-green': '#43b581',
-                    },
-                    fontFamily: {
-                        serif: ['"Merriweather"', 'serif'],
-                        sans: ['"Nunito"', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <!-- Font Awesome cho icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-        /* Ẩn thanh cuộn nhưng vẫn cuộn được */
-        body::-webkit-scrollbar {
-            display: none;
+        :root {
+            --mc-bg-overlay: rgba(0,0,0,0.65);
+            --mc-btn-bg: #7d7d7d;
+            --mc-btn-hover: #929292;
+            --mc-btn-active: #5e5e5e;
+            --mc-text-yellow: #ffff55;
+            --mc-text-title: #dcdcdc;
+            --mc-panel-bg: rgba(0, 0, 0, 0.75);
+            --mc-border: 2px solid #fff;
         }
-        body {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: 'VT323', monospace;
+            overflow: hidden;
+            user-select: none;
         }
-        html {
-            scroll-behavior: smooth;
+
+        /* --- BACKGROUND --- */
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://imgt.taimienphi.vn/cf/Images/ptx/2019/2/27/hinh-nen-minecraft-wallpapers-7.jpg');
+            background-size: cover;
+            background-position: center;
+            transition: background-image 0.5s ease-in-out;
+            z-index: -2;
         }
+
+        /* Hiệu ứng mờ chuyển động nhẹ */
+        .panorama-scroll {
+            animation: bgScroll 60s linear infinite alternate;
+        }
+
+        @keyframes bgScroll {
+            from { transform: scale(1.0); }
+            to { transform: scale(1.1); }
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.8) 100%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* --- MAIN MENU LAYOUT --- */
+        .main-menu {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            transition: opacity 0.3s;
+        }
+
+        .logo-text {
+            font-size: 72px;
+            color: var(--mc-text-title);
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            text-shadow: 4px 4px 0px #3f3f3f;
+            letter-spacing: 4px;
+            position: relative;
+        }
+
+        .splash-text {
+            color: var(--mc-text-yellow);
+            font-size: 28px;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 0px #3f3f3f;
+            transform: rotate(-15deg) translate(80px, -20px);
+            animation: pulse 0.8s infinite alternate;
+            width: 300px;
+            text-align: right;
+        }
+
+        @keyframes pulse {
+            from { transform: rotate(-15deg) translate(80px, -20px) scale(1); }
+            to { transform: rotate(-15deg) translate(80px, -20px) scale(1.1); }
+        }
+
+        /* --- BUTTONS --- */
+        .mc-btn {
+            background-color: var(--mc-btn-bg);
+            color: #fff;
+            font-family: 'VT323', monospace;
+            font-size: 24px;
+            width: 350px;
+            padding: 12px 0;
+            margin: 6px 0;
+            cursor: pointer;
+            text-shadow: 2px 2px #202020;
+            border: 2px solid #000;
+            box-shadow:
+                    inset 2px 2px 0px #c6c6c6,
+                    inset -2px -2px 0px #484848;
+            transition: 0.1s;
+            position: relative;
+        }
+
+        .mc-btn:hover {
+            background-color: var(--mc-btn-hover);
+            color: #ffffa0;
+            box-shadow:
+                    inset 2px 2px 0px #e0e0e0,
+                    inset -2px -2px 0px #5b5b5b;
+        }
+
+        .mc-btn:active {
+            background-color: var(--mc-btn-active);
+            transform: translateY(2px);
+            box-shadow: inset 2px 2px 0px #333;
+        }
+
+        /* --- CONTENT PANELS (MODALS) --- */
+        .content-panel {
+            display: none; /* Ẩn mặc định */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85); /* Nền tối mờ che menu */
+            z-index: 100;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .panel-box {
+            background-color: #c6c6c6; /* Màu xám GUI inventory */
+            border: 2px solid #000;
+            width: 80%;
+            max-width: 700px;
+            height: 70%;
+            max-height: 500px;
+            padding: 20px;
+            box-shadow:
+                    inset 3px 3px 0px #fff,
+                    inset -3px -3px 0px #555,
+                    10px 10px 0px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .panel-header {
+            color: #404040;
+            font-size: 32px;
+            margin-bottom: 15px;
+            text-align: left;
+            border-bottom: 2px solid #555;
+            padding-bottom: 10px;
+        }
+
+        .panel-body {
+            flex: 1;
+            overflow-y: auto;
+            color: #202020;
+            font-size: 22px;
+            text-align: left;
+            padding-right: 10px;
+        }
+
+        /* Scrollbar kiểu Minecraft */
+        .panel-body::-webkit-scrollbar {
+            width: 12px;
+            background: #000;
+        }
+        .panel-body::-webkit-scrollbar-thumb {
+            background: #8b8b8b;
+            border: 2px solid #fff;
+        }
+
+        /* Nút Back */
+        .btn-back {
+            margin-top: 15px;
+            align-self: center;
+            width: 200px;
+        }
+
+        /* --- STYLES CHO TỪNG PHẦN --- */
+
+        /* Profile Avatar */
+        .avatar-container {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .pixel-avatar {
+            width: 100px;
+            height: 100px;
+            border: 4px solid #000;
+            image-rendering: pixelated;
+            background: #fff; /* Placeholder */
+        }
+
+        /* Skills Grid */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .inv-slot {
+            width: 60px;
+            height: 60px;
+            background: #8b8b8b;
+            border: 2px solid #373737;
+            border-right-color: #fff;
+            border-bottom-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #fff;
+            cursor: help;
+            transition: 0.1s;
+        }
+        .inv-slot:hover {
+            background: #a0a0a0;
+            transform: scale(1.05);
+        }
+
+        /* Project List */
+        .project-item {
+            background: rgba(0,0,0,0.1);
+            border: 1px solid #555;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .project-title {
+            font-weight: bold;
+            color: #1a1a1a;
+            font-size: 24px;
+        }
+        .project-desc {
+            color: #444;
+            font-size: 20px;
+        }
+
+        /* Styles cho phần Contact Link mới */
+        .contact-link {
+            color: #000; /* Màu chữ đậm để dễ đọc trên nền xám */
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+            margin-bottom: 5px;
+            border: 2px solid transparent; /* Viền trong suốt để giữ chỗ */
+            transition: all 0.1s;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Hiệu ứng hover giống chọn item trong Minecraft */
+        .contact-link:hover {
+            background: rgba(139, 139, 139, 0.5);
+            border: 2px solid #fff; /* Viền trắng khi hover */
+            color: #ffff55; /* Chữ vàng */
+            text-shadow: 2px 2px 0px #3f3f3f;
+            transform: scale(1.02);
+            cursor: pointer;
+        }
+
+        .cta-blink {
+            color: #ff5555; /* Màu đỏ */
+            font-weight: bold;
+            text-align: center;
+            font-size: 24px;
+            margin: 10px 0;
+            text-shadow: 1px 1px 0px #3f3f3f;
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Footer info */
+        .version-info {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: white;
+            font-size: 18px;
+            text-shadow: 1px 1px #000;
+        }
+
+        .controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 50;
+        }
+        .mini-btn {
+            background: #555;
+            color: white;
+            border: 2px solid #fff;
+            font-family: 'VT323';
+            cursor: pointer;
+            padding: 5px 10px;
+            font-size: 16px;
+        }
+
     </style>
 </head>
-<body class="bg-warm-white text-dark-gray antialiased selection:bg-minecraft-green selection:text-white">
-<div id="root"></div>
+<body>
 
-<!-- CODE REACT NẰM Ở ĐÂY -->
-<script type="text/babel">
-    const { useState, useEffect, useRef } = React;
+<!-- Background -->
+<div class="background panorama-scroll" id="bg"></div>
+<div class="overlay"></div>
 
-    // --- Component: Button ---
-    const Button = ({ variant = 'primary', children, href, className = '', ...props }) => {
-        const baseStyles = "inline-flex items-center justify-center px-8 py-3 rounded-full font-bold text-white transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg no-underline text-sm md:text-base tracking-wide mt-6 cursor-pointer";
+<!-- Quick Controls -->
+<div class="controls">
+    <button class="mini-btn" onclick="changeBg()">🔄 Đổi Nền</button>
+</div>
 
-        const variants = {
-            primary: "bg-dark-gray hover:bg-gray-700",
-            minecraft: "bg-minecraft-green hover:bg-[#369669]",
-            facebook: "bg-[#1877F2] hover:bg-[#1465d1]",
-            zalo: "bg-[#0068FF] hover:bg-[#0054cc]",
-        };
+<!-- MAIN MENU SCREEN -->
+<div class="main-menu" id="mainMenu">
+    <div class="logo-text">NGUYỄN VĂN A</div>
+    <div class="splash-text">Hello World!</div>
 
-        const combinedClasses = `${baseStyles} ${variants[variant]} ${className}`;
+    <button class="mc-btn" onclick="openPanel('about')">GIỚI THIỆU BẢN THÂN</button>
+    <button class="mc-btn" onclick="openPanel('skills')">KHO ĐỒ (KỸ NĂNG)</button>
+    <button class="mc-btn" onclick="openPanel('projects')">THÀNH TỰU (DỰ ÁN)</button>
+    <button class="mc-btn" onclick="openPanel('contact')">GỬI TIN NHẮN</button>
 
-        if (href) {
-            return (
-                <a href={href} className={combinedClasses} {...props}>
-                    {children}
-                </a>
-            );
-        }
+    <div style="margin-top: 20px;"></div>
+    <button class="mc-btn" style="width: 200px;" onclick="alert('Không có lối thoát đâu :D')">THOÁT</button>
+</div>
 
-        return (
-            <button className={combinedClasses} {...props}>
-                {children}
-            </button>
-        );
-    };
-
-    // --- Component: ScrollSection ---
-    const ScrollSection = ({ children, className = "", delay = 0, backgroundSrc }) => {
-        const [isVisible, setIsVisible] = useState(false);
-        const sectionRef = useRef(null);
-
-        useEffect(() => {
-            const observer = new IntersectionObserver(
-                ([entry]) => {
-                    setIsVisible(entry.isIntersecting);
-                },
-                {
-                    root: null,
-                    rootMargin: '0px',
-                    threshold: 0.3, // Giảm threshold xuống một chút để dễ hiện hơn
-                }
-            );
-
-            const currentElement = sectionRef.current;
-            if (currentElement) {
-                observer.observe(currentElement);
-            }
-
-            return () => {
-                if (currentElement) {
-                    observer.unobserve(currentElement);
-                }
-            };
-        }, []);
-
-        return (
-            <section
-                ref={sectionRef}
-                className={`
-              relative w-full min-h-[85vh] flex flex-col justify-center items-center text-center px-6 py-12 overflow-hidden
-              ${className}
-            `}
-            >
-                {/* Background Layer */}
-                {backgroundSrc && (
-                    <div className="absolute inset-0 -z-10 pointer-events-none">
-                        {/* Image with slow zoom effect */}
-                        <div
-                            className={`w-full h-full transition-transform duration-[3000ms] ease-out ${isVisible ? 'scale-110' : 'scale-100'}`}
-                        >
-                            <img
-                                src={backgroundSrc}
-                                alt=""
-                                className="w-full h-full object-cover opacity-30"
-                            />
-                        </div>
-
-                        {/* Heavy overlay to keep the "warm white" theme dominant and text readable */}
-                        <div className="absolute inset-0 bg-warm-white/90 backdrop-blur-[2px]"></div>
-
-                        {/* Gradient to smooth edges */}
-                        <div className="absolute inset-0 bg-gradient-to-b from-warm-white via-transparent to-warm-white opacity-80"></div>
-                    </div>
-                )}
-
-                {/* Content Layer - Animates independently */}
-                <div
-                    className={`
-                relative z-10 max-w-4xl w-full flex flex-col items-center
-                transition-all duration-[1000ms] cubic-bezier(0.2, 0.8, 0.2, 1)
-                ${isVisible
-                        ? 'opacity-100 blur-0 translate-y-0 scale-100'
-                        : 'opacity-10 blur-[4px] translate-y-8 scale-95'}
-              `}
-                >
-                    {children}
+<!-- PANEL: ABOUT ME -->
+<div class="content-panel" id="panel-about">
+    <div class="panel-box">
+        <div class="panel-header">Giới Thiệu</div>
+        <div class="panel-body">
+            <div class="avatar-container">
+                <!-- Placeholder avatar Steve -->
+                <img src="https://i.pinimg.com/originals/d3/18/e7/d318e747852c0bc376378c66c3c5b565.png" class="pixel-avatar" alt="Avatar">
+                <div>
+                    <strong>Tên:</strong> Steve (Nguyễn Văn A)<br>
+                    <strong>Cấp độ:</strong> 25 (Tuổi)<br>
+                    <strong>Chức danh:</strong> Web Developer / Miner
                 </div>
-            </section>
-        );
-    };
-
-    // --- Component: Illustration (Helper) ---
-    const Illustration = ({ src, alt, className = "" }) => (
-        <div className={`relative mb-8 group ${className}`}>
-            <div className="absolute inset-0 bg-dark-gray/5 rounded-2xl transform translate-x-2 translate-y-2 transition-transform duration-500 group-hover:translate-x-3 group-hover:translate-y-3"></div>
-            <img
-                src={src}
-                alt={alt}
-                className="relative z-10 w-full max-w-sm h-64 object-cover rounded-2xl shadow-lg transform transition-transform duration-500 group-hover:-translate-y-1"
-                loading="lazy"
-            />
+            </div>
+            <p>Xin chào! Mình là một lập trình viên đam mê xây dựng các khối code thành những công trình vĩ đại.</p>
+            <p>Giống như chơi Survival, mình luôn tìm kiếm tài nguyên mới (kiến thức) và craft ra những công cụ hữu ích (phần mềm).</p>
+            <p>- Thích: Code, Cà phê, Minecraft.</p>
+            <p>- Ghét: Creeper và Bug.</p>
         </div>
-    );
+        <button class="mc-btn btn-back" onclick="closePanel('about')">Xong</button>
+    </div>
+</div>
 
-    // --- Main App Component ---
-    const App = () => {
-        const MY_NAME = "một Developer";
+<!-- PANEL: SKILLS (Inventory Style) -->
+<div class="content-panel" id="panel-skills">
+    <div class="panel-box">
+        <div class="panel-header">Kho Đồ (Skills)</div>
+        <div class="panel-body">
+            <p>Kéo chuột vào ô để xem chi tiết:</p>
+            <div class="skills-grid">
+                <!-- Các slot kỹ năng -->
+                <div class="inv-slot" title="HTML5 - Nền móng vững chắc"><i class="fab fa-html5"></i></div>
+                <div class="inv-slot" title="CSS3 - Trang trí nội thất"><i class="fab fa-css3-alt"></i></div>
+                <div class="inv-slot" title="JavaScript - Redstone logic"><i class="fab fa-js"></i></div>
+                <div class="inv-slot" title="React - Khối Command Block"><i class="fab fa-react"></i></div>
+                <div class="inv-slot" title="NodeJS - Server mạnh mẽ"><i class="fab fa-node"></i></div>
+                <div class="inv-slot" title="Git - Sao lưu thế giới"><i class="fab fa-git-alt"></i></div>
+                <div class="inv-slot" title="Python"><i class="fab fa-python"></i></div>
+                <div class="inv-slot" title="Database"><i class="fas fa-database"></i></div>
+            </div>
+            <br>
+            <p><strong>Công cụ chính:</strong> VS Code (Cúp Kim Cương)</p>
+        </div>
+        <button class="mc-btn btn-back" onclick="closePanel('skills')">Đóng Kho</button>
+    </div>
+</div>
 
-        return (
-            <main className="w-full mx-auto">
+<!-- PANEL: PROJECTS -->
+<div class="content-panel" id="panel-projects">
+    <div class="panel-box">
+        <div class="panel-header">Thành Tựu (Projects)</div>
+        <div class="panel-body">
+            <div class="project-item">
+                <div class="project-title">1. Website Thương Mại</div>
+                <div class="project-desc">Xây dựng shop bán kim cương online sử dụng ReactJS và Firebase.</div>
+            </div>
+            <div class="project-item">
+                <div class="project-title">2. App Quản Lý Chi Tiêu</div>
+                <div class="project-desc">Giúp dân làng quản lý ngọc lục bảo hiệu quả hơn.</div>
+            </div>
+            <div class="project-item">
+                <div class="project-title">3. Bot Tự Động</div>
+                <div class="project-desc">Tự động thu hoạch lúa khi đến mùa. (Automation Script)</div>
+            </div>
+        </div>
+        <button class="mc-btn btn-back" onclick="closePanel('projects')">Trở Về</button>
+    </div>
+</div>
 
-                {/* Section 1: Intro */}
-                <ScrollSection backgroundSrc="https://images.unsplash.com/photo-1493612276216-ee3925520721?auto=format&fit=crop&w=1920&q=80">
-                    <div className="mb-4 text-6xl animate-bounce">👋</div>
-                    <h2 className="font-serif text-4xl md:text-6xl font-bold mb-6 text-dark-gray">
-                        Ồ, chào đằng ấy!
-                    </h2>
-                    <p className="font-sans text-lg md:text-xl leading-relaxed text-dark-gray/90 max-w-2xl">
-                        Chắc là Google Maps chỉ đường sai, hoặc bạn thực sự tò mò muốn biết cái gã <strong>{MY_NAME}</strong> này là ai.
-                        Dù sao thì cũng lỡ vào rồi, kéo xuống dưới chút đi, hứa không làm tốn quá 30 giây cuộc đời đâu.
-                    </p>
-                </ScrollSection>
+<!-- PANEL: CONTACT -->
+<div class="content-panel" id="panel-contact">
+    <div class="panel-box">
+        <div class="panel-header">Gửi Tin Nhắn</div>
+        <div class="panel-body">
+            <p>Bạn có thể tìm thấy tôi tại tọa độ:</p>
 
-                {/* Section 2: Job */}
-                <ScrollSection backgroundSrc="https://images.unsplash.com/photo-1555099962-4199c345e5dd?auto=format&fit=crop&w=1920&q=80">
-                    <Illustration
-                        src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=800&q=80"
-                        alt="Coding setup"
-                    />
-                    <h2 className="font-serif text-3xl md:text-5xl font-bold mb-6 text-dark-gray">
-                        Mình làm cái gì á? 💻
-                    </h2>
-                    <p className="font-sans text-lg md:text-xl leading-relaxed text-dark-gray/90 max-w-2xl">
-                        Ban ngày thì mình là một <strong>Dev</strong> gõ phím cạch cạch kiếm cơm.
-                        Nhưng thực ra, công việc chính của mình là ngồi fix những cái bug do chính mình tạo ra từ hôm trước.
-                        Cuộc sống mà, cứ sai đi vì cuộc đời cho phép (nhưng khách hàng thì không).
-                    </p>
-                </ScrollSection>
+            <!-- Dòng kêu gọi hành động nhấp nháy -->
+            <div class="cta-blink">▼ CLICK ĐỂ KẾT NỐI NGAY ▼</div>
 
-                {/* Section 3: Story & Minecraft (Đã được khôi phục và cập nhật ảnh) */}
-                <ScrollSection backgroundSrc="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=1920&q=80">
-                    <Illustration
-                        src="https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482936EAX/anh-mo-ta.png"
-                        alt="Minecraft Gameplay"
-                    />
-                    <h2 className="font-serif text-3xl md:text-5xl font-bold mb-6 text-dark-gray">
-                        Khi rảnh rỗi sinh nông nổi... 🎮
-                    </h2>
-                    <p className="font-sans text-lg md:text-xl leading-relaxed text-dark-gray/90 max-w-2xl mb-2">
-                        Mình có một sở thích hơi "dị" là viết về hành trình <strong>chuyển sinh vào Minecraft</strong>.
-                        Nghe ảo đúng không? Nhưng mà nó cuốn lắm đấy. Nếu bạn cũng thích phiêu lưu, hardcore và đầy khối vuông thì... mời vào team của mình.
-                    </p>
-                    <Button variant="minecraft" href="#">
-                        ĐỌC THỬ TRUYỆN MÌNH VIẾT ➜
-                    </Button>
-                </ScrollSection>
+            <ul style="list-style: none; padding: 0;">
+                <li>
+                    <a href="mailto:steve@minecraft.com" class="contact-link" onclick="playClickSound()">
+                        <i class="fas fa-envelope" style="font-size: 28px; width: 30px;"></i>
+                        <span>Email: steve@minecraft.com</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://facebook.com/steve.craft" target="_blank" class="contact-link" onclick="playClickSound()">
+                        <i class="fab fa-facebook" style="font-size: 28px; width: 30px; color: #1877F2;"></i>
+                        <span>Facebook: /steve.craft</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://zalo.me/0912345678" target="_blank" class="contact-link" onclick="playClickSound()">
+                        <!-- Dùng icon comment thay thế vì FontAwesome bản free không có Zalo -->
+                        <i class="fas fa-comment-dots" style="font-size: 28px; width: 30px; color: #0068FF;"></i>
+                        <span>Zalo: 0912 345 678</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://github.com/miner_coder" target="_blank" class="contact-link" onclick="playClickSound()">
+                        <i class="fab fa-github" style="font-size: 28px; width: 30px; color: #000;"></i>
+                        <span>Github: /miner_coder</span>
+                    </a>
+                </li>
+            </ul>
+            <hr style="border-color: #777;">
+            <p style="font-style: italic; text-align: center;">"Đừng ngần ngại liên hệ, tôi không cắn đâu (trừ khi trời tối)."</p>
+        </div>
+        <button class="mc-btn btn-back" onclick="closePanel('contact')">Hủy</button>
+    </div>
+</div>
 
-                {/* Section 4: Facebook */}
-                <ScrollSection backgroundSrc="https://images.unsplash.com/photo-1562577309-4932fdd64cd1?auto=format&fit=crop&w=1920&q=80">
-                    <Illustration
-                        src="https://images.unsplash.com/photo-1611162616475-46b635cb6868?auto=format&fit=crop&w=800&q=80"
-                        alt="Social Media"
-                    />
-                    <h2 className="font-serif text-3xl md:text-5xl font-bold mb-6 text-dark-gray">
-                        Góc xả rác online 🗑️
-                    </h2>
-                    <p className="font-sans text-lg md:text-xl leading-relaxed text-dark-gray/90 max-w-2xl">
-                        Đây là cái Facebook của mình. Nơi mình đăng meme, than thở deadline...
-                        Đừng mong tìm thấy triết lý sống ở đây, nhưng nếu muốn chỗ giải trí thì cứ tự nhiên nhé.
-                    </p>
-                    <Button variant="facebook" href="https://www.facebook.com/nguyen.the.hung.889155">
-                        GHÉ THĂM CÁI ĐỘNG CỦA MÌNH
-                    </Button>
-                </ScrollSection>
+<div class="version-info">Portfolio v1.20.4</div>
 
-                {/* Section 5: Contact */}
-                <ScrollSection backgroundSrc="https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=1920&q=80">
-                    <Illustration
-                        src="https://images.unsplash.com/photo-1577563908411-5077b6dc7624?auto=format&fit=crop&w=800&q=80"
-                        alt="Coffee and chat"
-                    />
-                    <h2 className="font-serif text-3xl md:text-5xl font-bold mb-6 text-dark-gray">
-                        Cần tìm người gấp? 📞
-                    </h2>
-                    <p className="font-sans text-lg md:text-xl leading-relaxed text-dark-gray/90 max-w-2xl">
-                        Nếu cần liên hệ công việc, rủ đi nhậu, hoặc donate cà phê... thì Zalo là nhanh nhất.
-                        (Trừ khi mình đang bận đánh boss).
-                    </p>
-                    <p className="font-sans font-bold text-xl mt-4 text-dark-gray">
-                        Zalo: 036 686 3435
-                    </p>
-                    <Button variant="zalo" href="https://zalo.me/0366863435">
-                        CHAT ZALO NGAY
-                    </Button>
-                </ScrollSection>
+<script>
+    // Sound Effect Setup
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-                {/* Section 6: Footer */}
-                <ScrollSection className="!min-h-[40vh]" backgroundSrc="https://images.unsplash.com/photo-1586075010925-e23164a97b77?auto=format&fit=crop&w=1920&q=80">
-                    <div className="w-16 h-1 bg-dark-gray/10 mb-8 rounded-full"></div>
-                    <p className="font-serif text-xl md:text-2xl text-dark-gray mb-4">
-                        Hết rồi đó! Cảm ơn đã lướt tới tận đáy. Chúc bạn một ngày không bug.
-                    </p>
-                    <small className="font-sans text-dark-gray/60 text-sm">
-                        From {MY_NAME} with ❤️
-                    </small>
-                </ScrollSection>
+    function playClickSound() {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.1);
+    }
 
-            </main>
-        );
-    };
+    // Background Logic
+    const backgrounds = [
+        "https://imgt.taimienphi.vn/cf/Images/ptx/2019/2/27/hinh-nen-minecraft-wallpapers-19.jpg",
+        "https://imgt.taimienphi.vn/cf/Images/ptx/2019/2/27/hinh-nen-minecraft-wallpapers-3.jpg",
+        "https://imgt.taimienphi.vn/cf/Images/ptx/2019/2/27/hinh-nen-minecraft-wallpapers-7.jpg",
+        "https://imgt.taimienphi.vn/cf/Images/ptx/2019/2/27/hinh-nen-minecraft-wallpapers-9.jpg"
+    ];
+    let currentBg = 2;
 
-    // --- Mount App ---
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<App />);
+    function changeBg() {
+        playClickSound();
+        currentBg = (currentBg + 1) % backgrounds.length;
+        document.getElementById('bg').style.backgroundImage = `url('${backgrounds[currentBg]}')`;
+    }
+
+    // Navigation Logic
+    function openPanel(id) {
+        playClickSound();
+        document.getElementById('panel-' + id).style.display = 'flex';
+    }
+
+    function closePanel(id) {
+        playClickSound();
+        document.getElementById('panel-' + id).style.display = 'none';
+    }
 </script>
 </body>
 </html>
