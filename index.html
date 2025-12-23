@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StoryScroll Portfolio</title>
+
+    <!-- 1. Tải React và ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+    <!-- 2. Tải Babel để biên dịch JSX ngay trên trình duyệt -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- 3. Tải Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- 4. Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400&family=Nunito:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    <!-- 5. Cấu hình Tailwind giống như trong dự án gốc -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'warm-white': '#fdfbf7',
+                        'dark-gray': '#2c3e50',
+                        'minecraft-green': '#43b581',
+                    },
+                    fontFamily: {
+                        serif: ['"Merriweather"', 'serif'],
+                        sans: ['"Nunito"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Ẩn thanh cuộn nhưng vẫn cuộn được */
+        body::-webkit-scrollbar {
+            display: none;
+        }
+        body {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body class="bg-warm-white text-dark-gray antialiased selection:bg-minecraft-green selection:text-white">
+<div id="root"></div>
+
+<!-- CODE REACT NẰM Ở ĐÂY -->
+<script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // --- Component: Button ---
+    const Button = ({ variant = 'primary', children, href, className = '', ...props }) => {
+        const baseStyles = "inline-flex items-center justify-center px-8 py-3 rounded-full font-bold text-white transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg no-underline text-sm md:text-base tracking-wide mt-6 cursor-pointer";
+
+        const variants = {
+            primary: "bg-dark-gray hover:bg-gray-700",
+            minecraft: "bg-minecraft-green hover:bg-[#369669]",
+            facebook: "bg-[#1877F2] hover:bg-[#1465d1]",
+            zalo: "bg-[#0068FF] hover:bg-[#0054cc]",
+        };
+
+        const combinedClasses = `${baseStyles} ${variants[variant]} ${className}`;
+
+        if (href) {
+            return (
+                <a href={href} className={combinedClasses} {...props}>
+                    {children}
+                </a>
+            );
+        }
+
+        return (
+            <button className={combinedClasses} {...props}>
+                {children}
+            </button>
+        );
+    };
+
+    // --- Component: ScrollSection ---
+    const ScrollSection = ({ children, className = "", delay = 0, backgroundSrc }) => {
+        const [isVisible, setIsVisible] = useState(false);
+        const sectionRef = useRef(null);
+
+        useEffect(() => {
+            const observer = new IntersectionObserver(
+                ([entry]) => {
+                    setIsVisible(entry.isIntersecting);
+                },
+                {
+                    root: null,
+                    rootMargin: '0px',
+                    threshold: 0.3, // Giảm threshold xuống một chút để dễ hiện hơn
+                }
+            );
+
+            const currentElement = sectionRef.current;
+            if (currentElement) {
+                observer.observe(currentElement);
+            }
+
+            return () => {
+                if (currentElement) {
+                    observer.unobserve(currentElement);
+                }
+            };
+        }, []);
+
+        return (
+            <section
+                ref={sectionRef}
+                className={`
+              relative w-full min-h-[85vh] flex flex-col justify-center items-center text-center px-6 py-12 overflow-hidden
+              ${className}
+            `}
+            >
+                {/* Background Layer */}
+                {backgroundSrc && (
+                    <div className="absolute inset-0 -z-10 pointer-events-none">
+                        {/* Image with slow zoom effect */}
+                        <div
+                            className={`w-full h-full transition-transform duration-[3000ms] ease-out ${isVisible ? 'scale-110' : 'scale-100'}`}
+                        >
+                            <img
+                                src={backgroundSrc}
+                                alt=""
+                                className="w-full h-full object-cover opacity-30"
+                            />
+                        </div>
+
+                        {/* Heavy overlay to keep the "warm white" theme dominant and text readable */}
+                        <div className="absolute inset-0 bg-warm-white/90 backdrop-blur-[2px]"></div>
+
+                        {/* Gradient to smooth edges */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-warm-white via-transparent to-warm-white opacity-80"></div>
+                    </div>
+                )}
+
+                {/* Content Layer - Animates independently */}
+                <div
+                    className={`
+                relative z-10 max-w-4xl w-full flex flex-col items-center
+                transition-all duration-[1000ms] cubic-bezier(0.2, 0.8, 0.2, 1)
+                ${isVisible
+                        ? 'opacity-100 blur-0 translate-y-0 scale-100'
+                        : 'opacity-10 blur-[4px] translate-y-8 scale-95'}
+              `}
+                >
+                    {children}
+                </div>
+            </section>
+        );
+    };
+
+    // --- Component: Illustration (Helper) ---
+    const Illustration = ({ src, alt, className = "" }) => (
+        <div className={`relative mb-8 group ${className}`}>
+            <div className="absolute inset-0 bg-dark-gray/5 rounded-2xl transform translate-x-2 translate-y-2 transition-transform duration-500 group-hover:translate-x-3 group-hover:translate-y-3"></div>
+            <img
+                src={src}
+                alt={alt}
+                className="relative z-10 w-full max-w-sm h-64 object-cover rounded-2xl shadow-lg transform transition-transform duration-500 group-hover:-translate-y-1"
+                loading="lazy"
+            />
+        </div>
+    );
+
+    // --- Main App Component ---
+    const App = () => {
+        const MY_NAME = "một Developer";
+
+        return (
+            <main className="w-full mx-auto">
+
+                {/* Section 1: Intro */}
+                <ScrollSection backgroundSrc="https://images.unsplash.com/photo-1493612276216-ee3925520721?auto=format&fit=crop&w=1920&q=80">
+                    <div className="mb-4 text-6xl animate-bounce">👋</div>
+                    <h2 className="font-serif text-4xl md:text-6xl font-bold mb-6 text-dark-gray">
+                        Ồ, chào đằng ấy!
+                    </h2>
+                    <p className="font-sans text-lg md:text-xl leading-relaxed text-dark-gray/90 max-w-2xl">
+                        Chắc là Google Maps chỉ đường sai, hoặc bạn thực sự tò mò muốn biết cái gã <strong>{MY_NAME}</strong> này là ai.
+                        Dù sao thì cũng lỡ vào rồi, kéo xuống dưới chút đi, hứa không làm tốn quá 30 giây cuộc đời đâu.
+                    </p>
+                </ScrollSection>
+
+                {/* Section 2: Job */}
+                <ScrollSection backgroundSrc="https://images.unsplash.com/photo-1555099962-4199c345e5dd?auto=format&fit=crop&w=1920&q=80">
+                    <Illustration
+                        src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=800&q=80"
+                        alt="Coding setup"
+                    />
+                    <h2 className="font-serif text-3xl md:text-5xl font-bold mb-6 text-dark-gray">
+                        Mình làm cái gì á? 💻
+                    </h2>
+                    <p className="font-sans text-lg md:text-xl leading-relaxed text-dark-gray/90 max-w-2xl">
+                        Ban ngày thì mình là một <strong>Dev</strong> gõ phím cạch cạch kiếm cơm.
+                        Nhưng thực ra, công việc chính của mình là ngồi fix những cái bug do chính mình tạo ra từ hôm trước.
+                        Cuộc sống mà, cứ sai đi vì cuộc đời cho phép (nhưng khách hàng thì không).
+                    </p>
+                </ScrollSection>
+
+                {/* Section 3: Story & Minecraft (Đã được khôi phục và cập nhật ảnh) */}
+                <ScrollSection backgroundSrc="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=1920&q=80">
+                    <Illustration
+                        src="https://images.unsplash.com/photo-1627398242454-45a1465c2479?auto=format&fit=crop&w=800&q=80"
+                        alt="Minecraft Gameplay"
+                    />
+                    <h2 className="font-serif text-3xl md:text-5xl font-bold mb-6 text-dark-gray">
+                        Khi rảnh rỗi sinh nông nổi... 🎮
+                    </h2>
+                    <p className="font-sans text-lg md:text-xl leading-relaxed text-dark-gray/90 max-w-2xl mb-2">
+                        Mình có một sở thích hơi "dị" là viết về hành trình <strong>chuyển sinh vào Minecraft</strong>.
+                        Nghe ảo đúng không? Nhưng mà nó cuốn lắm đấy. Nếu bạn cũng thích phiêu lưu, hardcore và đầy khối vuông thì... mời vào team của mình.
+                    </p>
+                    <Button variant="minecraft" href="#">
+                        ĐỌC THỬ TRUYỆN MÌNH VIẾT ➜
+                    </Button>
+                </ScrollSection>
+
+                {/* Section 4: Facebook */}
+                <ScrollSection backgroundSrc="https://images.unsplash.com/photo-1562577309-4932fdd64cd1?auto=format&fit=crop&w=1920&q=80">
+                    <Illustration
+                        src="https://images.unsplash.com/photo-1611162616475-46b635cb6868?auto=format&fit=crop&w=800&q=80"
+                        alt="Social Media"
+                    />
+                    <h2 className="font-serif text-3xl md:text-5xl font-bold mb-6 text-dark-gray">
+                        Góc xả rác online 🗑️
+                    </h2>
+                    <p className="font-sans text-lg md:text-xl leading-relaxed text-dark-gray/90 max-w-2xl">
+                        Đây là cái Facebook của mình. Nơi mình đăng meme, than thở deadline...
+                        Đừng mong tìm thấy triết lý sống ở đây, nhưng nếu muốn chỗ giải trí thì cứ tự nhiên nhé.
+                    </p>
+                    <Button variant="facebook" href="#">
+                        GHÉ THĂM CÁI ĐỘNG CỦA MÌNH
+                    </Button>
+                </ScrollSection>
+
+                {/* Section 5: Contact */}
+                <ScrollSection backgroundSrc="https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=1920&q=80">
+                    <Illustration
+                        src="https://images.unsplash.com/photo-1577563908411-5077b6dc7624?auto=format&fit=crop&w=800&q=80"
+                        alt="Coffee and chat"
+                    />
+                    <h2 className="font-serif text-3xl md:text-5xl font-bold mb-6 text-dark-gray">
+                        Cần tìm người gấp? 📞
+                    </h2>
+                    <p className="font-sans text-lg md:text-xl leading-relaxed text-dark-gray/90 max-w-2xl">
+                        Nếu cần liên hệ công việc, rủ đi nhậu, hoặc donate cà phê... thì Zalo là nhanh nhất.
+                        (Trừ khi mình đang bận đánh boss).
+                    </p>
+                    <p className="font-sans font-bold text-xl mt-4 text-dark-gray">
+                        Zalo: 09xx.xxx.xxx
+                    </p>
+                    <Button variant="zalo" href="#">
+                        CHAT ZALO NGAY
+                    </Button>
+                </ScrollSection>
+
+                {/* Section 6: Footer */}
+                <ScrollSection className="!min-h-[40vh]" backgroundSrc="https://images.unsplash.com/photo-1586075010925-e23164a97b77?auto=format&fit=crop&w=1920&q=80">
+                    <div className="w-16 h-1 bg-dark-gray/10 mb-8 rounded-full"></div>
+                    <p className="font-serif text-xl md:text-2xl text-dark-gray mb-4">
+                        Hết rồi đó! Cảm ơn đã lướt tới tận đáy. Chúc bạn một ngày không bug.
+                    </p>
+                    <small className="font-sans text-dark-gray/60 text-sm">
+                        From {MY_NAME} with ❤️
+                    </small>
+                </ScrollSection>
+
+            </main>
+        );
+    };
+
+    // --- Mount App ---
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+</script>
+</body>
+</html>
