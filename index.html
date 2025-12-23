@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Hồ Sơ Của Tôi</title>
     <!-- Import phông chữ Pixel -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -31,6 +31,8 @@
             font-family: 'VT323', monospace;
             overflow: hidden;
             user-select: none;
+            /* Ngăn zoom trên mobile khi tap nhanh */
+            touch-action: manipulation;
         }
 
         /* --- BACKGROUND --- */
@@ -47,14 +49,13 @@
             z-index: -2;
         }
 
-        /* Hiệu ứng mờ chuyển động nhẹ */
         .panorama-scroll {
             animation: bgScroll 60s linear infinite alternate;
         }
 
         @keyframes bgScroll {
             from { transform: scale(1.0); }
-            to { transform: scale(1.1); }
+            to { transform: scale(1.15); }
         }
 
         .overlay {
@@ -63,7 +64,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.8) 100%);
+            background: radial-gradient(circle, rgba(0,0,0,0.2) 20%, rgba(0,0,0,0.8) 100%);
             z-index: -1;
             pointer-events: none;
         }
@@ -76,7 +77,7 @@
             justify-content: center;
             height: 100vh;
             text-align: center;
-            transition: opacity 0.3s;
+            padding: 0 10px;
         }
 
         .logo-text {
@@ -86,18 +87,19 @@
             margin-bottom: 5px;
             text-shadow: 4px 4px 0px #3f3f3f;
             letter-spacing: 4px;
-            position: relative;
+            line-height: 0.9;
         }
 
         .splash-text {
             color: var(--mc-text-yellow);
             font-size: 28px;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             text-shadow: 2px 2px 0px #3f3f3f;
             transform: rotate(-15deg) translate(80px, -20px);
             animation: pulse 0.8s infinite alternate;
             width: 300px;
             text-align: right;
+            pointer-events: none; /* Không chặn click vào nút */
         }
 
         @keyframes pulse {
@@ -112,6 +114,7 @@
             font-family: 'VT323', monospace;
             font-size: 24px;
             width: 350px;
+            max-width: 90%; /* Responsive width */
             padding: 12px 0;
             margin: 6px 0;
             cursor: pointer;
@@ -122,14 +125,17 @@
                     inset -2px -2px 0px #484848;
             transition: 0.1s;
             position: relative;
+            /* Ngăn text bị chọn trên mobile */
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .mc-btn:hover {
+        .mc-btn:hover, .mc-btn:focus {
             background-color: var(--mc-btn-hover);
             color: #ffffa0;
             box-shadow:
                     inset 2px 2px 0px #e0e0e0,
                     inset -2px -2px 0px #5b5b5b;
+            outline: none;
         }
 
         .mc-btn:active {
@@ -140,13 +146,13 @@
 
         /* --- CONTENT PANELS (MODALS) --- */
         .content-panel {
-            display: none; /* Ẩn mặc định */
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.85); /* Nền tối mờ che menu */
+            background: rgba(0,0,0,0.85);
             z-index: 100;
             flex-direction: column;
             align-items: center;
@@ -154,12 +160,12 @@
         }
 
         .panel-box {
-            background-color: #c6c6c6; /* Màu xám GUI inventory */
+            background-color: #c6c6c6;
             border: 2px solid #000;
             width: 80%;
             max-width: 700px;
             height: 70%;
-            max-height: 500px;
+            max-height: 600px;
             padding: 20px;
             box-shadow:
                     inset 3px 3px 0px #fff,
@@ -173,39 +179,42 @@
         .panel-header {
             color: #404040;
             font-size: 32px;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             text-align: left;
             border-bottom: 2px solid #555;
-            padding-bottom: 10px;
+            padding-bottom: 5px;
+            flex-shrink: 0; /* Không co lại khi màn hình nhỏ */
         }
 
         .panel-body {
             flex: 1;
             overflow-y: auto;
+            overflow-x: hidden;
             color: #202020;
             font-size: 22px;
             text-align: left;
-            padding-right: 10px;
+            padding-right: 5px;
+            /* Scroll smooth trên iOS */
+            -webkit-overflow-scrolling: touch;
         }
 
-        /* Scrollbar kiểu Minecraft */
         .panel-body::-webkit-scrollbar {
-            width: 12px;
+            width: 8px; /* Mỏng hơn cho mobile */
             background: #000;
         }
         .panel-body::-webkit-scrollbar-thumb {
             background: #8b8b8b;
-            border: 2px solid #fff;
+            border: 1px solid #fff;
         }
 
-        /* Nút Back */
         .btn-back {
             margin-top: 15px;
             align-self: center;
             width: 200px;
+            flex-shrink: 0;
         }
 
-        /* --- STYLES CHO TỪNG PHẦN --- */
+        /* --- COMPONENT STYLES --- */
 
         /* Profile Avatar */
         .avatar-container {
@@ -219,19 +228,19 @@
             height: 100px;
             border: 4px solid #000;
             image-rendering: pixelated;
-            background: #fff; /* Placeholder */
+            background: #fff;
+            flex-shrink: 0;
         }
 
         /* Skills Grid */
         .skills-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-            gap: 10px;
+            grid-template-columns: repeat(auto-fill, minmax(55px, 1fr));
+            gap: 8px;
             margin-top: 10px;
         }
         .inv-slot {
-            width: 60px;
-            height: 60px;
+            aspect-ratio: 1/1; /* Giữ hình vuông */
             background: #8b8b8b;
             border: 2px solid #373737;
             border-right-color: #fff;
@@ -241,61 +250,39 @@
             justify-content: center;
             font-size: 24px;
             color: #fff;
-            cursor: help;
-            transition: 0.1s;
+            cursor: pointer; /* Cho mobile biết có thể tap */
         }
-        .inv-slot:hover {
+        .inv-slot:active {
             background: #a0a0a0;
-            transform: scale(1.05);
         }
 
-        /* Project List */
-        .project-item {
-            background: rgba(0,0,0,0.1);
-            border: 1px solid #555;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
-        .project-title {
-            font-weight: bold;
-            color: #1a1a1a;
-            font-size: 24px;
-        }
-        .project-desc {
-            color: #444;
-            font-size: 20px;
-        }
-
-        /* Styles cho phần Contact Link mới */
+        /* Contact Links */
         .contact-link {
-            color: #000; /* Màu chữ đậm để dễ đọc trên nền xám */
+            color: #000;
             text-decoration: none;
             display: flex;
             align-items: center;
             gap: 15px;
             padding: 10px;
-            margin-bottom: 5px;
-            border: 2px solid transparent; /* Viền trong suốt để giữ chỗ */
-            transition: all 0.1s;
-            background: rgba(255, 255, 255, 0.1);
+            margin-bottom: 8px;
+            border: 2px solid transparent;
+            background: rgba(255, 255, 255, 0.15); /* Nền rõ hơn xíu cho dễ tap */
+            border-radius: 4px;
         }
 
-        /* Hiệu ứng hover giống chọn item trong Minecraft */
-        .contact-link:hover {
+        .contact-link:hover, .contact-link:active {
             background: rgba(139, 139, 139, 0.5);
-            border: 2px solid #fff; /* Viền trắng khi hover */
-            color: #ffff55; /* Chữ vàng */
-            text-shadow: 2px 2px 0px #3f3f3f;
-            transform: scale(1.02);
-            cursor: pointer;
+            border: 2px solid #fff;
+            color: #ffff55;
+            text-shadow: 1px 1px 0px #3f3f3f;
         }
 
         .cta-blink {
-            color: #ff5555; /* Màu đỏ */
+            color: #ff5555;
             font-weight: bold;
             text-align: center;
             font-size: 24px;
-            margin: 10px 0;
+            margin: 15px 0;
             text-shadow: 1px 1px 0px #3f3f3f;
             animation: blink 1s step-end infinite;
         }
@@ -305,14 +292,22 @@
             50% { opacity: 0; }
         }
 
-        /* Footer info */
+        .project-item {
+            background: rgba(0,0,0,0.05);
+            border: 1px solid #777;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+
+        /* Footer & Controls */
         .version-info {
             position: absolute;
             bottom: 10px;
             left: 10px;
             color: white;
-            font-size: 18px;
+            font-size: 16px;
             text-shadow: 1px 1px #000;
+            opacity: 0.8;
         }
 
         .controls {
@@ -329,77 +324,141 @@
             cursor: pointer;
             padding: 5px 10px;
             font-size: 16px;
+            box-shadow: 2px 2px 0px #000;
+        }
+        .mini-btn:active {
+            transform: translateY(2px);
+            box-shadow: none;
+        }
+
+        /* --- MOBILE OPTIMIZATION MEDIA QUERIES --- */
+        @media (max-width: 768px) {
+            .logo-text {
+                font-size: 50px; /* Logo nhỏ lại */
+                margin-top: -40px; /* Đẩy lên cao chút */
+            }
+            .splash-text {
+                font-size: 20px;
+                width: auto;
+                transform: rotate(-10deg) translate(0, -5px);
+                margin-bottom: 25px;
+                text-align: center;
+            }
+            .mc-btn {
+                font-size: 22px;
+                width: 85%; /* Nút rộng ra chiếm 85% màn hình */
+                padding: 14px 0; /* Nút cao hơn để dễ bấm */
+            }
+
+            /* Panel chiếm gần full màn hình trên mobile */
+            .panel-box {
+                width: 92%;
+                height: 85%;
+                padding: 15px;
+            }
+            .panel-header {
+                font-size: 26px;
+            }
+            .panel-body {
+                font-size: 18px; /* Chữ nhỏ lại chút cho dễ đọc */
+            }
+
+            /* Avatar xếp dọc */
+            .avatar-container {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+
+            /* Icon contact nhỏ lại xíu nếu cần */
+            .contact-link i {
+                font-size: 24px;
+            }
+            .contact-link span {
+                font-size: 18px;
+                word-break: break-word; /* Xuống dòng nếu tên quá dài */
+            }
+
+            .version-info {
+                font-size: 12px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        /* Màn hình siêu nhỏ (iPhone SE cũ) */
+        @media (max-width: 380px) {
+            .logo-text { font-size: 42px; }
+            .splash-text { font-size: 16px; margin-bottom: 15px; }
         }
 
     </style>
 </head>
 <body>
 
-<!-- Background -->
 <div class="background panorama-scroll" id="bg"></div>
 <div class="overlay"></div>
 
-<!-- Quick Controls -->
 <div class="controls">
     <button class="mini-btn" onclick="changeBg()">🔄 Đổi Nền</button>
 </div>
 
-<!-- MAIN MENU SCREEN -->
+<!-- MAIN MENU -->
 <div class="main-menu" id="mainMenu">
     <div class="logo-text">NGUYỄN VĂN A</div>
-    <div class="splash-text">Hello World!</div>
+    <div class="splash-text">Mobile Ready!</div>
 
     <button class="mc-btn" onclick="openPanel('about')">GIỚI THIỆU BẢN THÂN</button>
     <button class="mc-btn" onclick="openPanel('skills')">KHO ĐỒ (KỸ NĂNG)</button>
     <button class="mc-btn" onclick="openPanel('projects')">THÀNH TỰU (DỰ ÁN)</button>
     <button class="mc-btn" onclick="openPanel('contact')">GỬI TIN NHẮN</button>
 
-    <div style="margin-top: 20px;"></div>
-    <button class="mc-btn" style="width: 200px;" onclick="alert('Không có lối thoát đâu :D')">THOÁT</button>
+    <div style="margin-top: 15px;"></div>
+    <button class="mc-btn" style="width: 200px; max-width: 60%;" onclick="alert('Đã thoát game (giả vờ thôi)!')">THOÁT</button>
 </div>
 
-<!-- PANEL: ABOUT ME -->
+<!-- PANEL: ABOUT -->
 <div class="content-panel" id="panel-about">
     <div class="panel-box">
         <div class="panel-header">Giới Thiệu</div>
         <div class="panel-body">
             <div class="avatar-container">
-                <!-- Placeholder avatar Steve -->
                 <img src="https://i.pinimg.com/originals/d3/18/e7/d318e747852c0bc376378c66c3c5b565.png" class="pixel-avatar" alt="Avatar">
                 <div>
                     <strong>Tên:</strong> Steve (Nguyễn Văn A)<br>
-                    <strong>Cấp độ:</strong> 25 (Tuổi)<br>
-                    <strong>Chức danh:</strong> Web Developer / Miner
+                    <strong>Lv:</strong> 25 | <strong>Class:</strong> Dev<br>
+                    <strong>HP:</strong> ❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️
                 </div>
             </div>
-            <p>Xin chào! Mình là một lập trình viên đam mê xây dựng các khối code thành những công trình vĩ đại.</p>
-            <p>Giống như chơi Survival, mình luôn tìm kiếm tài nguyên mới (kiến thức) và craft ra những công cụ hữu ích (phần mềm).</p>
-            <p>- Thích: Code, Cà phê, Minecraft.</p>
-            <p>- Ghét: Creeper và Bug.</p>
+            <hr style="border-color: #888; margin: 10px 0;">
+            <p>Xin chào! Mình là một lập trình viên đam mê xây dựng các khối code.</p>
+            <p>Mục tiêu: Đánh bại Ender Dragon (Deadline) và xây dựng những công trình vĩ đại.</p>
         </div>
         <button class="mc-btn btn-back" onclick="closePanel('about')">Xong</button>
     </div>
 </div>
 
-<!-- PANEL: SKILLS (Inventory Style) -->
+<!-- PANEL: SKILLS -->
 <div class="content-panel" id="panel-skills">
     <div class="panel-box">
         <div class="panel-header">Kho Đồ (Skills)</div>
         <div class="panel-body">
-            <p>Kéo chuột vào ô để xem chi tiết:</p>
+            <p>Chạm vào để xem tên:</p>
             <div class="skills-grid">
-                <!-- Các slot kỹ năng -->
-                <div class="inv-slot" title="HTML5 - Nền móng vững chắc"><i class="fab fa-html5"></i></div>
-                <div class="inv-slot" title="CSS3 - Trang trí nội thất"><i class="fab fa-css3-alt"></i></div>
-                <div class="inv-slot" title="JavaScript - Redstone logic"><i class="fab fa-js"></i></div>
-                <div class="inv-slot" title="React - Khối Command Block"><i class="fab fa-react"></i></div>
-                <div class="inv-slot" title="NodeJS - Server mạnh mẽ"><i class="fab fa-node"></i></div>
-                <div class="inv-slot" title="Git - Sao lưu thế giới"><i class="fab fa-git-alt"></i></div>
-                <div class="inv-slot" title="Python"><i class="fab fa-python"></i></div>
-                <div class="inv-slot" title="Database"><i class="fas fa-database"></i></div>
+                <div class="inv-slot" onclick="alert('HTML5: Master')"><i class="fab fa-html5"></i></div>
+                <div class="inv-slot" onclick="alert('CSS3: Expert')"><i class="fab fa-css3-alt"></i></div>
+                <div class="inv-slot" onclick="alert('JS: Advanced')"><i class="fab fa-js"></i></div>
+                <div class="inv-slot" onclick="alert('React: Intermediate')"><i class="fab fa-react"></i></div>
+                <div class="inv-slot" onclick="alert('NodeJS: Beginner')"><i class="fab fa-node"></i></div>
+                <div class="inv-slot" onclick="alert('Git: Essential')"><i class="fab fa-git-alt"></i></div>
+                <div class="inv-slot" onclick="alert('Python: Basic')"><i class="fab fa-python"></i></div>
+                <div class="inv-slot" onclick="alert('Database: SQL')"><i class="fas fa-database"></i></div>
+                <!-- Empty slots for decoration -->
+                <div class="inv-slot" style="opacity: 0.5;"></div>
+                <div class="inv-slot" style="opacity: 0.5;"></div>
             </div>
-            <br>
-            <p><strong>Công cụ chính:</strong> VS Code (Cúp Kim Cương)</p>
         </div>
         <button class="mc-btn btn-back" onclick="closePanel('skills')">Đóng Kho</button>
     </div>
@@ -408,19 +467,19 @@
 <!-- PANEL: PROJECTS -->
 <div class="content-panel" id="panel-projects">
     <div class="panel-box">
-        <div class="panel-header">Thành Tựu (Projects)</div>
+        <div class="panel-header">Thành Tựu</div>
         <div class="panel-body">
             <div class="project-item">
-                <div class="project-title">1. Website Thương Mại</div>
-                <div class="project-desc">Xây dựng shop bán kim cương online sử dụng ReactJS và Firebase.</div>
+                <div style="font-weight:bold; font-size: 20px;">⛏️ Shop Kim Cương</div>
+                <div style="font-size: 16px; color:#333;">Web bán hàng ReactJS</div>
             </div>
             <div class="project-item">
-                <div class="project-title">2. App Quản Lý Chi Tiêu</div>
-                <div class="project-desc">Giúp dân làng quản lý ngọc lục bảo hiệu quả hơn.</div>
+                <div style="font-weight:bold; font-size: 20px;">🗺️ Bản Đồ Làng</div>
+                <div style="font-size: 16px; color:#333;">App quản lý địa điểm</div>
             </div>
             <div class="project-item">
-                <div class="project-title">3. Bot Tự Động</div>
-                <div class="project-desc">Tự động thu hoạch lúa khi đến mùa. (Automation Script)</div>
+                <div style="font-weight:bold; font-size: 20px;">🤖 Golem Bảo Vệ</div>
+                <div style="font-size: 16px; color:#333;">Bot tự động trả lời</div>
             </div>
         </div>
         <button class="mc-btn btn-back" onclick="closePanel('projects')">Trở Về</button>
@@ -430,51 +489,39 @@
 <!-- PANEL: CONTACT -->
 <div class="content-panel" id="panel-contact">
     <div class="panel-box">
-        <div class="panel-header">Gửi Tin Nhắn</div>
+        <div class="panel-header">Liên Hệ</div>
         <div class="panel-body">
-            <p>Bạn có thể tìm thấy tôi tại tọa độ:</p>
+            <div class="cta-blink" style="font-size: 20px;">▼ CLICK KẾT NỐI ▼</div>
 
-            <!-- Dòng kêu gọi hành động nhấp nháy -->
-            <div class="cta-blink">▼ CLICK ĐỂ KẾT NỐI NGAY ▼</div>
+            <a href="mailto:steve@minecraft.com" class="contact-link" onclick="playClickSound()">
+                <i class="fas fa-envelope" style="color:#d13434;"></i>
+                <span>Gửi Email</span>
+            </a>
 
-            <ul style="list-style: none; padding: 0;">
-                <li>
-                    <a href="mailto:steve@minecraft.com" class="contact-link" onclick="playClickSound()">
-                        <i class="fas fa-envelope" style="font-size: 28px; width: 30px;"></i>
-                        <span>Email: steve@minecraft.com</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://facebook.com/steve.craft" target="_blank" class="contact-link" onclick="playClickSound()">
-                        <i class="fab fa-facebook" style="font-size: 28px; width: 30px; color: #1877F2;"></i>
-                        <span>Facebook: /steve.craft</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://zalo.me/0912345678" target="_blank" class="contact-link" onclick="playClickSound()">
-                        <!-- Dùng icon comment thay thế vì FontAwesome bản free không có Zalo -->
-                        <i class="fas fa-comment-dots" style="font-size: 28px; width: 30px; color: #0068FF;"></i>
-                        <span>Zalo: 0912 345 678</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://github.com/miner_coder" target="_blank" class="contact-link" onclick="playClickSound()">
-                        <i class="fab fa-github" style="font-size: 28px; width: 30px; color: #000;"></i>
-                        <span>Github: /miner_coder</span>
-                    </a>
-                </li>
-            </ul>
-            <hr style="border-color: #777;">
-            <p style="font-style: italic; text-align: center;">"Đừng ngần ngại liên hệ, tôi không cắn đâu (trừ khi trời tối)."</p>
+            <a href="https://facebook.com" target="_blank" class="contact-link" onclick="playClickSound()">
+                <i class="fab fa-facebook" style="color: #1877F2;"></i>
+                <span>Facebook</span>
+            </a>
+
+            <a href="https://zalo.me" target="_blank" class="contact-link" onclick="playClickSound()">
+                <i class="fas fa-comment-dots" style="color: #0068FF;"></i>
+                <span>Zalo Chat</span>
+            </a>
+
+            <a href="https://github.com" target="_blank" class="contact-link" onclick="playClickSound()">
+                <i class="fab fa-github" style="color: #000;"></i>
+                <span>Github</span>
+            </a>
+
         </div>
         <button class="mc-btn btn-back" onclick="closePanel('contact')">Hủy</button>
     </div>
 </div>
 
-<div class="version-info">Portfolio v1.20.4</div>
+<div class="version-info">Portfolio Pocket Edition</div>
 
 <script>
-    // Sound Effect Setup
+    // Sound Effect
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
     function playClickSound() {
@@ -507,7 +554,7 @@
         document.getElementById('bg').style.backgroundImage = `url('${backgrounds[currentBg]}')`;
     }
 
-    // Navigation Logic
+    // Navigation
     function openPanel(id) {
         playClickSound();
         document.getElementById('panel-' + id).style.display = 'flex';
